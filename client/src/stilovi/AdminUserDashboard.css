@@ -1,0 +1,125 @@
+.admin-user-management {
+  padding: 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+  font-family: "Inter", sans-serif; /* Modern, clean font */
+}
+
+.admin-user-management h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a1a1a; /* Darker, modern gray */
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.error-message {
+  background-color: #fee2e2; /* Softer red */
+  color: #991b1b; /* Muted red text */
+  padding: 12px;
+  border-radius: 8px; /* Softer corners */
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  border: 1px solid #e5e7eb; /* Light gray border */
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #fafafa; /* Subtle off-white */
+  transition: border-color 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3b82f6; /* Modern blue */
+}
+
+.search-input::placeholder {
+  color: #9ca3af; /* Light gray placeholder */
+}
+
+.refresh-btn {
+  background-color: #3b82f6; /* Modern blue */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.refresh-btn:hover {
+  background-color: #2563eb; /* Darker blue on hover */
+}
+
+.user-list {
+  overflow-x: auto;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 16px;
+  text-align: left;
+  font-size: 14px;
+}
+
+th {
+  background-color: #f9fafb; /* Light gray */
+  color: #4b5563; /* Muted gray text */
+  font-weight: 600;
+}
+
+td {
+  border-bottom: 1px solid #e5e7eb; /* Light gray border */
+  color: #374151; /* Darker gray text */
+}
+
+.promote-btn,
+.demote-btn {
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.promote-btn {
+  background-color: #10b981; /* Modern green */
+  color: white;
+  border: none;
+}
+
+.promote-btn:hover {
+  background-color: #059669; /* Darker green */
+}
+
+.demote-btn {
+  background-color: #ef4444; /* Modern red */
+  color: white;
+  border: none;
+}
+
+.demote-btn:hover {
+  background-color: #dc2626; /* Darker red */
+}
+
+.no-users {
+  text-align: center;
+  color: #6b7280; /* Muted gray */
+  padding: 24px;
+}
