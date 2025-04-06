@@ -1,27 +1,21 @@
 import express from "express";
 import mongoose from "mongoose";
-import helmet from "helmet";
-import compress from "compression";
-import cors from "cors";
-
 import config from "./src/config.js";
-import userRute from "./src/rute/userRute.js";
-import adminRute from "./src/rute/adminRute.js";
+import destinacijaRuta from "./src/rute/destinacijaRuta.js";
 
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(helmet());
-app.use(compress());
-app.use(cors({ credentials: true }));
-
-app.use("/api/user", userRute);
-app.use("/api/admin", adminRute);
-
-app.listen(config.port, () => console.log(`Server pokrenut na portu: ${config.port}`));
+app.use("/api/destinacije", destinacijaRuta);
 
 mongoose
   .connect(config.mongo)
-  .then(() => console.log("Mongo baza uspjesno spojena!"))
-  .catch((err) => console.log(err));
+  .then(() => {
+    console.log("Uspješno spojeni na bazu podataka.");
+    app.listen(config.port, () => {
+      console.log(`Server radi na portu: ${config.port}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Greška pri povezivanju s bazom:", err);
+  });
