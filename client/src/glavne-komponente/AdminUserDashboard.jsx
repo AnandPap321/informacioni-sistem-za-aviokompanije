@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getAllUsers, promoteToAdmin, demoteToCustomer } from "../api/userApi";
+import "../stilovi/AdminUserDashboard.css"; // Adjust the path as necessary
 
 const AdminUserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -70,7 +71,17 @@ const AdminUserManagement = () => {
       user.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (loading) return <div className="loading">Loading...</div>;
+  if (loading) {
+    return (
+      <div className="admin-user-management">
+        <h1>User Management</h1>
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading users...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-user-management">
@@ -78,17 +89,46 @@ const AdminUserManagement = () => {
 
       {error && <div className="error-message">{error}</div>}
 
-      <input
-        type="text"
-        placeholder="Search users..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="search-input"
-      />
-
-      <button onClick={fetchUsers} className="refresh-btn">
-        Refresh
-      </button>
+      <div className="controls">
+        <div className="search-container">
+          <svg
+            className="search-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input
+            type="text"
+            placeholder="Search users..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+        </div>
+        <button onClick={fetchUsers} className="refresh-btn">
+          <svg
+            className="refresh-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M21 2v6h-6"></path>
+            <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+            <path d="M3 22v-6h6"></path>
+            <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+          </svg>
+          Refresh
+        </button>
+      </div>
 
       <div className="user-list">
         <table>
@@ -97,9 +137,9 @@ const AdminUserManagement = () => {
               <th>Name</th>
               <th>Email</th>
               <th>Role</th>
-              <th>Phone</th>
-              <th>Points</th>
-              <th>Bookings</th>
+              <th className="hide-mobile">Phone</th>
+              <th className="hide-mobile">Points</th>
+              <th className="hide-mobile">Bookings</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -109,13 +149,21 @@ const AdminUserManagement = () => {
                 <tr key={user._id}>
                   <td>{user.name || "N/A"}</td>
                   <td>{user.email}</td>
-                  <td>{user.role}</td>
-                  <td>{user.phoneNumber || "N/A"}</td>
-                  <td>{user.loyaltyPoints || 0}</td>
                   <td>
-                    {user.bookingHistory?.length > 0
-                      ? user.bookingHistory.length + " bookings"
-                      : "None"}
+                    <span className={`role-badge ${user.role}`}>
+                      {user.role}
+                    </span>
+                  </td>
+                  <td className="hide-mobile">{user.phoneNumber || "N/A"}</td>
+                  <td className="hide-mobile">{user.loyaltyPoints || 0}</td>
+                  <td className="hide-mobile">
+                    {user.bookingHistory?.length > 0 ? (
+                      <span className="booking-badge">
+                        {user.bookingHistory.length} bookings
+                      </span>
+                    ) : (
+                      "None"
+                    )}
                   </td>
                   <td>
                     {user.role === "customer" ? (
