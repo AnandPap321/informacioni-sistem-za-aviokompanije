@@ -1,39 +1,32 @@
+// Sprint 2 - User Authentication & Account Management
+
+import jwt from "jsonwebtoken";
+
 export const proslijediDalje = (req, res, next) => {
   next();
 };
 
-/*export const authenticate = async (req, res, next) => {
+export const autentifikacija = (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) {
-      return res
-        .status(401)
-        .json({ message: "Pristup odbijen. Token nije pronađen." });
+      return res.status(401).json({ message: "Nije pronađen token" });
     }
 
-    const decoded = jwt.verify(token, config.secret);
-    const user = await User.findById(decoded.id).select("-password");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    if (!user) {
-      return res.status(401).json({ message: "Korisnik nije pronađen." });
-    }
+    req.korisnik = decoded;
 
-    req.user = user;
     next();
   } catch (error) {
-    return res
-      .status(401)
-      .json({ message: "Neispravan token. Pristup odbijen." });
-  }
-};*/
-
-export const adminOnly = (req, res, next) => {
-  if (req.user && req.user.role === "admin") {
-    next();
-  } else {
-    res
-      .status(403)
-      .json({ message: "Pristup odbijen. Potrebna admin privilegija." });
+    console.error("Autentifikacija error:", error);
+    res.status(401).json({ message: "Nevažeći token" });
   }
 };
+
+// Middleware za autentifikaciju koji:
+// Provjerava prisustvo JWT tokena u Authorization headeru
+// Verifikuje token sa JWT_SECRET
+// Ako je token validan, dodaje korisnikove podatke u req.korisnik
+// Koristi se na zaštićenim rutama koje zahtijevaju prijavu

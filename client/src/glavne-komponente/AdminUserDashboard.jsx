@@ -1,8 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getAllUsers, promoteToAdmin, demoteToCustomer } from "../api/userApi";
-import "../stilovi/AdminUserDashboard.css"; // Adjust the path as necessary
+import {
+  dobijSveKorisnike,
+  promovisiNaAdmina,
+  demovisiToKorisnika,
+} from "../pomocne-funkcije/fetch-funkcije";
+import "../stilovi/AdminUserDashboard.css";
 
 const AdminUserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -12,13 +16,13 @@ const AdminUserManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    fetchUsers();
+    dobijKorisnike();
   }, []);
 
-  const fetchUsers = async () => {
+  const dobijKorisnike = async () => {
     try {
       setLoading(true);
-      const data = await getAllUsers();
+      const data = await dobijSveKorisnike();
       setUsers(data);
       setError(null);
     } catch (err) {
@@ -29,11 +33,11 @@ const AdminUserManagement = () => {
     }
   };
 
-  const handlePromoteUser = async (userId) => {
+  const upravljajPromocijomKorisnika = async (userId) => {
     if (actionInProgress) return;
     try {
       setActionInProgress(true);
-      await promoteToAdmin(userId);
+      await promovisiNaAdmina(userId);
       setUsers(
         users.map((user) =>
           user._id === userId ? { ...user, role: "admin" } : user
@@ -47,11 +51,11 @@ const AdminUserManagement = () => {
     }
   };
 
-  const handleDemoteUser = async (userId) => {
+  const upravljajDemocijomKorisnika = async (userId) => {
     if (actionInProgress) return;
     try {
       setActionInProgress(true);
-      await demoteToCustomer(userId);
+      await demovisiToKorisnika(userId);
       setUsers(
         users.map((user) =>
           user._id === userId ? { ...user, role: "customer" } : user
@@ -111,7 +115,7 @@ const AdminUserManagement = () => {
             className="search-input"
           />
         </div>
-        <button onClick={fetchUsers} className="refresh-btn">
+        <button onClick={dobijKorisnike} className="refresh-btn">
           <svg
             className="refresh-icon"
             xmlns="http://www.w3.org/2000/svg"
@@ -168,14 +172,14 @@ const AdminUserManagement = () => {
                   <td>
                     {user.role === "customer" ? (
                       <button
-                        onClick={() => handlePromoteUser(user._id)}
+                        onClick={() => upravljajPromocijomKorisnika(user._id)}
                         disabled={actionInProgress}
                         className="promote-btn">
                         Promote
                       </button>
                     ) : user.role === "admin" ? (
                       <button
-                        onClick={() => handleDemoteUser(user._id)}
+                        onClick={() => upravljajDemocijomKorisnika(user._id)}
                         disabled={actionInProgress}
                         className="demote-btn">
                         Demote

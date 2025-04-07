@@ -1,94 +1,74 @@
-import User from "../modeli/userModel.js";
-
 export const provjeraAplikacije = (req, res) => {
   return res.status(200).json({ poruka: "Sve ok!" });
 };
 
-export const dohvatiSveKorisnike = async (req, res) => {
+import { Destinacija } from "../modeli.js";
+
+// Dohvati sve destinacije
+const dohvatiDestinacije = async (req, res) => {
   try {
-    const korisnici = await User.find({}).select("-password");
-    res.status(200).json(korisnici);
-  } catch (error) {
-    res.status(500).json({
-      message: "Greška pri dohvaćanju korisnika",
-      error: error.message,
-    });
+    const destinacije = await Destinacija.find();
+    res.status(200).json(destinacije);
+  } catch (err) {
+    res.status(500).json({ poruka: "Greška pri dohvatanju destinacija." });
   }
 };
 
-export const dohvatiKorisnikaPoId = async (req, res) => {
+// Dohvati jednu destinaciju
+const jednaDestinacija = async (req, res) => {
   try {
-    const korisnik = await User.findById(req.params.id).select("-password");
-
-    if (korisnik) {
-      res.status(200).json(korisnik);
-    } else {
-      res.status(404).json({ message: "Korisnik nije pronađen" });
-    }
-  } catch (error) {
-    res.status(500).json({
-      message: "Greška pri dohvaćanju korisnika",
-      error: error.message,
-    });
+    const destinacija = await Destinacija.findById(req.params.id);
+    if (!destinacija)
+      return res.status(404).json({ poruka: "Destinacija nije pronađena." });
+    res.status(200).json(destinacija);
+  } catch (err) {
+    res.status(500).json({ poruka: "Greška pri dohvatanju destinacije." });
   }
 };
 
-export const promovirajUAdmina = async (req, res) => {
+// Dodaj novu destinaciju
+const dodajDestinaciju = async (req, res) => {
   try {
-    const korisnik = await User.findById(req.params.id);
-
-    if (!korisnik) {
-      return res.status(404).json({ message: "Korisnik nije pronađen" });
-    }
-
-    if (korisnik.role === "admin") {
-      return res.status(400).json({ message: "Korisnik je već admin" });
-    }
-
-    korisnik.role = "admin";
-    const azuriraniKorisnik = await korisnik.save();
-
-    res.status(200).json({
-      _id: azuriraniKorisnik._id,
-      name: azuriraniKorisnik.name,
-      email: azuriraniKorisnik.email,
-      role: azuriraniKorisnik.role,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Greška pri promoviranju korisnika",
-      error: error.message,
-    });
+    const novaDestinacija = new Destinacija(req.body);
+    await novaDestinacija.save();
+    res.status(201).json(novaDestinacija);
+  } catch (err) {
+    res.status(400).json({ poruka: "Greška pri dodavanju destinacije." });
   }
 };
 
-export const demovirajUKorisnika = async (req, res) => {
+// Ažuriraj destinaciju
+const azurirajDestinaciju = async (req, res) => {
   try {
-    const korisnik = await User.findById(req.params.id);
-
-    if (!korisnik) {
-      return res.status(404).json({ message: "Korisnik nije pronađen" });
-    }
-
-    if (korisnik.role === "customer") {
-      return res
-        .status(400)
-        .json({ message: "Korisnik je već običan korisnik" });
-    }
-
-    korisnik.role = "customer";
-    const azuriraniKorisnik = await korisnik.save();
-
-    res.status(200).json({
-      _id: azuriraniKorisnik._id,
-      name: azuriraniKorisnik.name,
-      email: azuriraniKorisnik.email,
-      role: azuriraniKorisnik.role,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Greška pri demoviranje korisnika",
-      error: error.message,
-    });
+    const azurirana = await Destinacija.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    if (!azurirana)
+      return res.status(404).json({ poruka: "Destinacija nije pronađena." });
+    res.status(200).json(azurirana);
+  } catch (err) {
+    res.status(400).json({ poruka: "Greška pri ažuriranju destinacije." });
   }
+};
+
+// Obriši destinaciju
+const obrisiDestinaciju = async (req, res) => {
+  try {
+    const obrisana = await Destinacija.findByIdAndDelete(req.params.id);
+    if (!obrisana)
+      return res.status(404).json({ poruka: "Destinacija nije pronađena." });
+    res.status(200).json({ poruka: "Destinacija uspješno obrisana." });
+  } catch (err) {
+    res.status(500).json({ poruka: "Greška pri brisanju destinacije." });
+  }
+};
+
+export {
+  dohvatiDestinacije,
+  jednaDestinacija,
+  dodajDestinaciju,
+  azurirajDestinaciju,
+  obrisiDestinaciju,
 };
