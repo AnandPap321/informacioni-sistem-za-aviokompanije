@@ -704,6 +704,11 @@ form {
   transform: translateY(-1px);
 }
 
+.pretraga-forma .form-group > *:not(:last-child) {
+  margin-bottom: 0.5rem;
+}
+
+
 .loading {
   text-align: center;
   padding: 2rem;
@@ -932,3 +937,5 @@ form {
     background-color: #fff;
     cursor: default;
 }
+
+

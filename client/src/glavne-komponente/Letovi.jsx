@@ -11,9 +11,14 @@ const Letovi = () => {
         odrediste: '',
         dan: '',
         mjesec: '',
-        godina: ''
+        godina: '',
+        airline: '',
+        departureFrom: '',
+        departureTo: '',
+        arrivalFrom: '',
+        arrivalTo: '',
     });
-
+    
     const fetchDestinacije = async () => {
         try {
             console.log('Pokušavam dohvatiti destinacije...');
@@ -47,6 +52,13 @@ const Letovi = () => {
                 params.datumPolaska = `${dan}/${mjesec}/${filters.godina}`;
             }
             
+            if (filters.airline) params.airline = filters.airline;
+            if (filters.departureFrom) params.departureFrom = filters.departureFrom;
+            if (filters.departureTo) params.departureTo = filters.departureTo;
+            if (filters.arrivalFrom) params.arrivalFrom = filters.arrivalFrom;
+            if (filters.arrivalTo) params.arrivalTo = filters.arrivalTo;
+            
+
             console.log('Pokušavam dohvatiti letove sa parametrima:', params);
             const response = await axios.get('/api/letovi', { params });
             console.log('Response od letova:', response);
@@ -212,6 +224,53 @@ const Letovi = () => {
                             maxLength="4"
                         />
                     </div>
+                    <div className="form-group">
+    <input
+        type="text"
+        name="airline"
+        placeholder="Avio kompanija"
+        value={filters.airline}
+        onChange={handleFilterChange}
+        className="input-field"
+    />
+</div>
+
+<div className="form-group">
+    <label>Vrijeme polaska:</label>
+    <input
+        type="time"
+        name="departureFrom"
+        value={filters.departureFrom}
+        onChange={handleFilterChange}
+        className="input-field"
+    />
+    <input
+        type="time"
+        name="departureTo"
+        value={filters.departureTo}
+        onChange={handleFilterChange}
+        className="input-field"
+    />
+</div>
+
+<div className="form-group">
+    <label>Vrijeme dolaska:</label>
+    <input
+        type="time"
+        name="arrivalFrom"
+        value={filters.arrivalFrom}
+        onChange={handleFilterChange}
+        className="input-field"
+    />
+    <input
+        type="time"
+        name="arrivalTo"
+        value={filters.arrivalTo}
+        onChange={handleFilterChange}
+        className="input-field"
+    />
+</div>
+
                 </div>
                 <button type="submit" className="pretrazi-dugme" disabled={loading}>
                     Pretraži
