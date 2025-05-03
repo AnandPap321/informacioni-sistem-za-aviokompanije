@@ -53,9 +53,8 @@ npm run dev
 
 `http://localhost:5173`
 
-
-
 ### Napomene za razvoj
+
 - Backend server mora biti pokrenut na portu 5000
 - MongoDB mora biti pokrenut na portu 27017
 - Frontend aplikacija koristi proxy konfiguraciju za preusmjeravanje API poziva na backend
@@ -67,14 +66,12 @@ npm run dev
 3. Napraviti `git pull` lokalno kako bi se ucitao novi branch i prebaciti se na njega tokom rada.
 4. Napraviti **Pull Request (PR)** sa predloženim izmjenama i sačekajte pregled i odobrenje.
 
-
-
-
 // Sprint 3 - Grupa 1 //
 
 #### Implementirane komponente:
 
 1. **Backend**:
+
    - Modifikovan `letKontroleri.js`:
      - Dodata pretraga po destinaciji (case-insensitive)
      - Implementirana pretraga po datumu u formatu DD/MM/YYYY
@@ -86,6 +83,7 @@ npm run dev
      - Standardiziran format datuma (DD/MM/YYYY) kroz cijelu aplikaciju
 
 2. **Frontend**:
+
    - Unaprijeđena `Letovi.jsx` komponenta:
      - Implementiran dropdown menu za odabir destinacije
      - Implementiran custom date input sa odvojenim poljima za dan, mjesec i godinu
@@ -113,12 +111,14 @@ npm run dev
      - Prilagođen prikaz za mobilne uređaje
 
 ### Lokacija izmjena:
+
 - `server/src/kontroleri/letKontroleri.js`
 - `server/src/rute/letRute.js`
 - `client/src/glavne-komponente/Letovi.jsx`
 - `client/src/stilovi/App.css`
 
 ### Nove funkcionalnosti:
+
 - Pretraga letova po destinaciji kroz dropdown menu
 - Pretraga letova po datumu kroz custom date input (DD/MM/YYYY)
 - Validacija unosa datuma sa ograničenjima za dan (1-31) i mjesec (1-12)
@@ -129,16 +129,16 @@ npm run dev
 - Bolje rukovanje greškama i edge slučajevima
 
 ### Napomene:
+
 - Format datuma je standardiziran na DD/MM/YYYY kroz cijelu aplikaciju
 - Implementirana je validacija datuma i na frontendu i na backendu
 - Svi datumi se čuvaju u bazi u ISO formatu, ali se prikazuju u DD/MM/YYYY formatu
 - Pretraga po datumu traži letove za cijeli dan (00:00 - 23:59)
 
-
-
 ### Testiranje aplikacije lokalno
 
 1. Nakon što pokrenete aplikaciju, prvo kreirajte testne podatke:
+
    - Kliknite na dugme "Kreiraj testne letove" na stranici za pretragu letova
    - Ovo će kreirati testni avion i nekoliko testnih letova
 
@@ -157,10 +157,10 @@ npm run dev
      sjedalaPoRedu: {
        F: 2,
        C: 3,
-       Y: 6
-     }
-   })
-   
+       Y: 6,
+     },
+   });
+
    // 2. Kopirajte ID kreiranog aviona (_id) i iskoristite ga za kreiranje leta
    db.lets.insertOne({
      polaziste: "Sarajevo",
@@ -168,11 +168,12 @@ npm run dev
      datumPolaska: new Date("2024-05-01T10:00:00Z"),
      cijena: 250,
      brojSlobodnihMjesta: 120,
-     avionId: ObjectId("ZAMIJENITE_SA_ID_AVIONA") // Ovdje zamijenite sa stvarnim ID-em
-   })
+     avionId: ObjectId("ZAMIJENITE_SA_ID_AVIONA"), // Ovdje zamijenite sa stvarnim ID-em
+   });
    ```
 
    **Napomena**: Ako koristite MongoDB Compass:
+
    - Povežite se na `mongodb://localhost:27017`
    - Kreirajte bazu `aviokompanija` ako ne postoji
    - U kolekciji `avions` dodajte avion
@@ -180,6 +181,7 @@ npm run dev
    - U kolekciji `lets` dodajte let sa kopiranim `avionId`
 
    **Primjer ID-a i kako ga pronaći**:
+
    1. Nakon što dodate avion, MongoDB će automatski generisati `_id` koji izgleda ovako:
       ```
       _id: ObjectId("65f3a7b8c4d3e2f1a0b9c8d7")
@@ -197,15 +199,17 @@ npm run dev
         datumPolaska: new Date("2024-05-01T10:00:00Z"),
         cijena: 250,
         brojSlobodnihMjesta: 120,
-        avionId: ObjectId("65f3a7b8c4d3e2f1a0b9c8d7") // Ovdje ide vaš kopirani ID
-      })
+        avionId: ObjectId("65f3a7b8c4d3e2f1a0b9c8d7"), // Ovdje ide vaš kopirani ID
+      });
       ```
 
 2. Testirajte pretragu po destinaciji:
+
    - Koristite dropdown menu za odabir neke od dostupnih destinacija (Istanbul, Dubai, Berlin)
    - Kliknite "Pretraži" da vidite letove za odabranu destinaciju
 
 3. Testirajte pretragu po datumu:
+
    - Unesite datum u formatu DD/MM/YYYY koristeći tri odvojena polja
    - Dostupni testni datumi su:
      - 01/05/2024 (let za Istanbul)
