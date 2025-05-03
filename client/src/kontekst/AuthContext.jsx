@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }) => {
     const adresaRute = `${getBaseUrl()}/api/korisnici/reset-lozinke`;
 
     try {
-      const odgovor = await axios.post(adresaRute, { email });
+      const Odgovor = await axios.post(adresaRute, { email });
       return {
         uspjesno: true,
         poruka: "Zahtjev za resetovanje lozinke je poslan na vaš email",
