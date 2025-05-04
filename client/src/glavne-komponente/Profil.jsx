@@ -143,6 +143,8 @@ const Profil = () => {
             Sačuvaj promjene
           </button>
 
+          <button onClick={() => navigate("/forgot-password")}>Reset passworda</button>
+
           {poruka && <p className="success">{poruka}</p>}
           {greska && <p className="error">{greska}</p>}
         </form>

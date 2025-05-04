@@ -8,23 +8,21 @@ const resetPassword = async (req, res) => {
   }
 
   try {
-    // Konfiguracija za slanje emaila
     const transporter = createTransport({
-      service: "gmail",
-      auth: {
-        user: "tvoj.email@gmail.com",
-        pass: "tvoj-app-password", // Ako koristiš Gmail, postavi app password
-      },
+      host: "smtp.sendgrid.net",
+      port: 587,
+      secure: false,
+      auth: { user: "apikey", pass: process.env.SENDGRID_API_KEY },
+      tls: { rejectUnauthorized: false },
     });
 
     const mailOptions = {
-      from: "tvoj.email@gmail.com",
+      from: "anandpap@live.com",
       to: email,
-      subject: "Reset lozinke",
-      text: "Klikni na link za resetovanje lozinke: http://localhost:3000/reset-password",
+      subject: "Reset passworda",
+      text: "Kliknite na link za resetovanje passworda: https://informacioni-sistem-za-aviokompanije.vercel.app/reset-password",
     };
 
-    // Slanje emaila
     await transporter.sendMail(mailOptions);
 
     res.status(200).json({ message: "Email poslan za resetovanje lozinke." });
