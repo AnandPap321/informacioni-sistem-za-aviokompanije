@@ -287,7 +287,7 @@ useEffect(() => {
       setBookedSeats(seatsResponse.data.bookedSeats);
   
       alert("Rezervacija uspješno završena!");
-      navigate("/");
+      navigate("/pocetna");
     } catch (error) {
       console.error("Greška pri potvrdi rezervacije:", error);
       alert("Došlo je do greške pri potvrdi rezervacije");

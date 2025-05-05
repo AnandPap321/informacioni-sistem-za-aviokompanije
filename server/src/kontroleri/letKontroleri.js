@@ -2,66 +2,84 @@ import mongoose from "mongoose";
 import { Let, Destinacija, OtkazaniLet, Notifikacija, Korisnik, Booking } from "../modeli/modeli.js";
 import { sendCancellationEmail } from "./rezervacijaKontroleri.js";
 
+// Pomoćna funkcija (samo lokalna, za referencu – može biti definirana izvan funkcije ako želite)
+const timeToMinutes = (timeStr) => {
+  if (!timeStr) return null;
+  const [hours, minutes] = timeStr.split(":").map(Number);
+  return hours * 60 + minutes;
+};
+
 export const dohvatiLetove = async (req, res) => {
   try {
-    const { odrediste, datumOd, datumDo, aviokompanija, departureFrom, departureTo, arrivalFrom, arrivalTo } =
-      req.query;
+    const { odrediste, datumOd, datumDo, aviokompanija, vrijemePolaska, vrijemeDolaska } = req.query;
     console.log("Server primio zahtjev sa parametrima:", {
-      odrediste,
-      datumOd,
-      datumDo,
-      aviokompanija,
-      departureFrom,
-      departureTo,
-      arrivalFrom,
-      arrivalTo,
+      odrediste, datumOd, datumDo, aviokompanija, vrijemePolaska, vrijemeDolaska,
     });
-
+    
     let query = {};
-
-    // Filter by destination (using your field; adjust if necessary)
+    
+    // Filter by destination
     if (odrediste) {
       query.destination = { $regex: new RegExp(odrediste, "i") };
     }
-
-    // Filter by date range (using validityFrom/validityTo in your DB)
+    
+    // Filter by date range using validityFrom and validityTo
     if (datumOd && datumDo) {
-      const startDate = new Date(datumOd);
-      const endDate = new Date(datumDo);
-      endDate.setHours(23, 59, 59, 999);
+      const startDate = new Date(`${datumOd}T00:00:00.000Z`);
+      const endDate = new Date(`${datumDo}T23:59:59.999Z`);
+      console.log("Filtriranje po datumu:", { startDate: startDate.toISOString(), endDate: endDate.toISOString() });
       query.validityFrom = { $lte: endDate };
       query.validityTo = { $gte: startDate };
     }
-
+    
     if (aviokompanija) {
       query.aviokompanija = { $regex: new RegExp(aviokompanija, "i") };
     }
-
-    // Filter by departure time range (departureTime is stored as string "HH:MM")
-    if (departureFrom && departureTo) {
-      query.departureTime = { $gte: departureFrom, $lte: departureTo };
-    } else if (departureFrom) {
-      query.departureTime = { $gte: departureFrom };
-    } else if (departureTo) {
-      query.departureTime = { $lte: departureTo };
+    
+    // Novo: Filtriranje vremena korištenjem $expr i $convert za robustnu konverziju
+    if (vrijemePolaska && vrijemeDolaska) {
+      const depMinutes = timeToMinutes(vrijemePolaska);  // očekuje "08:30" => 510
+      const arrMinutes = timeToMinutes(vrijemeDolaska);    //, npr. "11:00" => 660
+      
+      query.$expr = {
+        $and: [
+          {
+            $gte: [
+              {
+                $add: [
+                  { $multiply: [ { $convert: { input: { $substrBytes: ["$departureTime", 0, 2] }, to: "int", onError: 0, onNull: 0 } }, 60 ] },
+                  { $convert: { input: { $substrBytes: ["$departureTime", 3, 2] }, to: "int", onError: 0, onNull: 0 } }
+                ]
+              },
+              depMinutes
+            ]
+          },
+          {
+            $lte: [
+              {
+                $add: [
+                  { $multiply: [ { $convert: { input: { $substrBytes: ["$arrivalTime", 0, 2] }, to: "int", onError: 0, onNull: 0 } }, 60 ] },
+                  { $convert: { input: { $substrBytes: ["$arrivalTime", 3, 2] }, to: "int", onError: 0, onNull: 0 } }
+                ]
+              },
+              arrMinutes
+            ]
+          }
+        ]
+      };
+    } else {
+      // Ako je samo jedno uneseno, koristite točno jednaku vrijednost
+      if (vrijemePolaska) query.departureTime = vrijemePolaska;
+      if (vrijemeDolaska) query.arrivalTime = vrijemeDolaska;
     }
-
-    // Filter by arrival time range (arrivalTime stored as string)
-    if (arrivalFrom && arrivalTo) {
-      query.arrivalTime = { $gte: arrivalFrom, $lte: arrivalTo };
-    } else if (arrivalFrom) {
-      query.arrivalTime = { $gte: arrivalFrom };
-    } else if (arrivalTo) {
-      query.arrivalTime = { $lte: arrivalTo };
-    }
-
-    console.log("MongoDB query:", query);
-
+    
+    console.log("Finalni MongoDB query:", JSON.stringify(query));
+    
     const letovi = await Let.find(query)
       .sort({ flightNumber: 1 })
       .populate("avionId", "naziv model brojSjedista")
       .lean();
-
+    
     console.log("Pronađeni letovi:", letovi);
     res.status(200).json(letovi);
   } catch (error) {
@@ -69,6 +87,7 @@ export const dohvatiLetove = async (req, res) => {
     res.status(500).json({ message: "Greška pri dohvatanju letova" });
   }
 };
+
 
 // Novi kontroler za napredno pretraživanje
 export const pretraziLetove = async (req, res) => {
