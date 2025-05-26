@@ -1067,6 +1067,6 @@ input[type="time"] {
 .prodaja-datumi {
   flex-direction: row;
   gap: 2rem;
-  align-items: center;
+  align-items: end;
   justify-content: flex-end;
 }

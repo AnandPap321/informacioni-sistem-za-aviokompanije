@@ -6,6 +6,7 @@ import {
   demovirajUKorisnika,
   obrisiKorisnika,
   dodajNovogKorisnika,
+  pregledProdaje,
 } from "../kontroleri/adminKontroleri.js";
 import {
   dohvatiLetove,
@@ -55,5 +56,7 @@ router
   .post("/letovi/otkazi", autentifikacija, adminOnly, otkaziLet)
   .get("/otkazani-letovi", autentifikacija, adminOnly, dohvatiOtkazaneLetove)
   .delete("/letovi/otkazi", autentifikacija, adminOnly, obrisiOtkazaniLet);
+
+router.get("/pregled-prodaje", autentifikacija, adminOnly, pregledProdaje);
 
 export default router;
