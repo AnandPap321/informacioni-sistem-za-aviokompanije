@@ -1,4 +1,5 @@
-import { Korisnik } from "../modeli/modeli.js";
+import { Booking, Korisnik } from "../modeli/modeli.js";
+import { startOfWeek, addWeeks, endOfWeek } from "date-fns";
 
 export const provjeraAplikacije = (req, res) => {
   return res.status(200).json({ poruka: "Sve ok!" });
@@ -131,6 +132,97 @@ const dodajNovogKorisnika = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ poruka: "Greška pri dodavanju korisnika", error: error.message });
+  }
+};
+
+function getStartAndEndOfISOWeek(godina, sedmicaOd, sedmicaDo) {
+  const jan4 = new Date(godina, 0, 4);
+  const startOfFirstWeek = startOfWeek(jan4, { weekStartsOn: 1 });
+  const datumOd = addWeeks(startOfFirstWeek, sedmicaOd - 1);
+  const datumDoPosljednja = addWeeks(startOfFirstWeek, sedmicaDo - 1);
+  const datumDo = endOfWeek(datumDoPosljednja, { weekStartsOn: 1 });
+  return { datumOd, datumDo };
+}
+
+function getAllWeeks(godina, sedmicaOd, sedmicaDo) {
+  const sedmice = [];
+
+  for (let index = sedmicaOd; index <= sedmicaDo; index++) {
+    sedmice.push({
+      godina: godina,
+      sedmica: index,
+    });
+  }
+  return sedmice;
+}
+
+export const pregledProdaje = async (req, res) => {
+  try {
+    const { godina, sedmicaOd, sedmicaDo } = req.query;
+    const sedmicaOdBroj = Number(sedmicaOd);
+    const sedmicaDoBroj = Number(sedmicaDo);
+    const godinaBroj = Number(godina);
+    // const { datumOd, datumDo } = getStartAndEndOfISOWeek(godina, sedmicaOd, sedmicaDo);
+    const sedmice = getAllWeeks(godinaBroj, sedmicaOdBroj, sedmicaDoBroj);
+
+    const bookingsByWeek = await Booking.aggregate([
+      {
+        $lookup: {
+          from: "lets",
+          localField: "flight",
+          foreignField: "_id",
+          as: "flight",
+        },
+      },
+      { $unwind: { path: "$flight", preserveNullAndEmptyArrays: false } },
+      {
+        $addFields: {
+          isoWeek: { $isoWeek: "$flight.datumPolaska" },
+          isoWeekYear: { $isoWeekYear: "$flight.datumPolaska" },
+        },
+      },
+      {
+        $match: {
+          isoWeek: { $gte: sedmicaOdBroj, $lte: sedmicaDoBroj },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            godina: "$isoWeekYear",
+            sedmica: "$isoWeek",
+          },
+          totalCijena: { $sum: "$cijenaKarte" },
+          brojRezervacija: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { "_id.godina": 1, "_id.sedmica": 1 },
+      },
+    ]);
+
+    let lastTotalCijena = 0;
+
+    const merged = sedmice.map(({ godina, sedmica }) => {
+      const pronadena = bookingsByWeek.find((b) => b._id.godina == godina && b._id.sedmica === sedmica);
+
+      if (pronadena) {
+        lastTotalCijena = pronadena.totalCijena;
+      }
+
+      return {
+        godina,
+        sedmica,
+        totalCijena: pronadena ? pronadena.totalCijena : lastTotalCijena,
+        brojRezervacija: pronadena?.brojRezervacija || 0,
+      };
+    });
+
+    res.status(200).json(merged);
+  } catch (error) {
+    console.log(error);
+
+    return res.status(400);
   }
 };
 

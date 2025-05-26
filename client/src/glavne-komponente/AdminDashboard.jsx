@@ -55,6 +55,12 @@ const AdminDashboard = () => {
               <p>Upravljanje cijenama i popustima</p>
             </div>
           </div>
+          <div className="pocetna-opcija" onClick={() => navigate("/pregled-prodaje")} style={{ cursor: "pointer" }}>
+            <div className="pocetna-opcija-kartica">
+              <h3>Pregled prodaje</h3>
+              <p>Statistika prodaje i izvještaj</p>
+            </div>
+          </div>
         </div>
       </div>
 
