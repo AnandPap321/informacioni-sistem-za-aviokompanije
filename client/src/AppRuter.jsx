@@ -22,6 +22,7 @@ import Lojalnost from "./glavne-komponente/Lojalnost";
 import { AuthProvider, useAuth } from "./kontekst/AuthContext";
 import { LanguageProvider } from "./kontekst/LanguageContext";
 import Cjenovnik from "./glavne-komponente/Cjenovnik";
+import PregledProdaje from "./glavne-komponente/PregledProdaje";
 
 // Komponenta za zaštićene admin rute
 const ProtectedAdminRoute = ({ children }) => {
@@ -75,6 +76,7 @@ function App() {
               <Route path="/aviokompanije" element={<UpravljanjeAviokompanijama />} />
               <Route path="/rezervacije" element={<AzurirajRezervacije />} />
               <Route path="/loyalty" element={<Lojalnost />} />
+              <Route path="/pregled-prodaje" element={<PregledProdaje />} />
             </Routes>
           </main>
         </AuthProvider>
